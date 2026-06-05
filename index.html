@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>元器件多平台比价 · 一键对比</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--p:#1677ff;--ph:#4096ff;--t:#1a1a2e;--ts:#666;--tm:#999;--b:#e8e8e8;--sh:0 2px 8px rgba(0,0,0,.08);--shh:0 4px 16px rgba(0,0,0,.12);--r:12px;--rs:8px;--s:#52c41a;--w:#faad14;--d:#ff4d4f}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);line-height:1.6;min-height:100vh}
+.h{background:linear-gradient(135deg,#0f1923,#1a2d3d,#0f3460);color:#fff;padding:14px 0;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.h h1{font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.h .tag{font-size:10px;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:10px}
+.ct{max-width:960px;margin:0 auto;padding:16px}
+.search-wrap{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);margin-bottom:16px}
+.search-row{display:flex;gap:10px;align-items:stretch}
+.search-input{flex:1;padding:13px 16px;font-size:15px;border:2px solid var(--b);border-radius:var(--rs);outline:none;background:#fafafa;font-family:"Courier New",Consolas,monospace;transition:all .2s}
+.search-input:focus{border-color:var(--p);background:#fff;box-shadow:0 0 0 3px rgba(22,119,255,.1)}
+.search-input::placeholder{font-family:inherit;color:#bbb;font-size:13px}
+.search-btn{padding:13px 24px;font-size:14px;font-weight:600;background:var(--p);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;transition:all .2s;white-space:nowrap;min-width:120px}
+.search-btn:hover{background:var(--ph);transform:translateY(-1px)}
+.search-btn:disabled{opacity:.5;transform:none}
+.open-all-btn{padding:13px 24px;font-size:14px;font-weight:600;background:#0f3460;color:#fff;border:none;border-radius:var(--rs);cursor:pointer;transition:all .2s;white-space:nowrap;display:none}
+.open-all-btn:hover{background:#16213e}
+.open-all-btn.show{display:block}
+.info-bar{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;align-items:center;display:none}
+.info-bar.show{display:flex}
+.info-chip{font-size:12px;padding:4px 10px;border-radius:14px;background:#f0f5ff;color:var(--p);display:flex;align-items:center;gap:4px}
+.info-chip.mfr{background:#f6ffed;color:var(--s)}
+.info-chip.pkg{background:#fff7e6;color:#d48806}
+.copied-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.copied-toast.show{opacity:1}
+.platforms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pcard{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;transition:all .2s;border:1px solid transparent;border-left:4px solid transparent}
+.pcard:hover{box-shadow:var(--shh);transform:translateY(-2px)}
+.pcard.lcsc{border-left-color:#e74c3c}
+.pcard.ickey{border-left-color:#3498db}
+.pcard.hqchip{border-left-color:#e67e22}
+.pcard.digikey{border-left-color:#2ecc71}
+.pcard.mouser{border-left-color:#9b59b6}
+.pcard.hardcity{border-left-color:#1abc9c}
+.pcard-body{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.pcard-left{display:flex;align-items:center;gap:8px}
+.pcard-logo{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.pcard-info{line-height:1.3}
+.pcard-name{font-size:14px;font-weight:700}
+.pcard-sub{font-size:10px;color:var(--tm)}
+.pcard-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.pcard-btn{padding:7px 16px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-block;text-align:center}
+.pcard-btn.go{background:var(--p);color:#fff}
+.pcard-btn.go:hover{background:var(--ph)}
+.pcard-btn.primary{background:var(--s);color:#fff}
+.pcard-btn.primary:hover{background:#49aa19}
+.pcard-hint{font-size:10px;color:var(--tm)}
+
+.results-header{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px;flex-wrap:wrap;gap:10px;display:none}
+.results-header.show{display:flex}
+.results-title{font-size:13px;color:var(--tm)}
+.empty{text-align:center;padding:60px 20px;color:var(--tm)}
+.empty .icon{font-size:40px;margin-bottom:10px}
+.history-wrap{margin-top:16px}
+.history-tags{display:flex;gap:6px;flex-wrap:wrap}
+.hist-tag{font-size:11px;padding:4px 10px;background:var(--card);border:1px solid var(--b);border-radius:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px;font-family:"Courier New",monospace}
+.hist-tag:hover{background:#f0f5ff;border-color:var(--p)}
+.hist-tag .del{font-size:13px;opacity:.4;cursor:pointer;margin-left:4px}
+.hist-tag .del:hover{opacity:1;color:var(--d)}
+.loading{text-align:center;padding:40px}
+.spin{width:24px;height:24px;border:3px solid var(--b);border-top-color:var(--p);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ft{text-align:center;padding:24px;color:var(--tm);font-size:11px}
+@media(max-width:640px){.search-row{flex-direction:column}.search-btn,.open-all-btn{width:100%}.platforms-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="h">
+  <h1>🔍 元器件多平台比价 <span class="tag">一键对比</span></h1>
+</div>
+
+<div class="ct">
+<div class="search-wrap">
+  <div class="search-row">
+    <input class="search-input" id="searchInput" placeholder="输入原厂型号 · 一键打开6大平台对比" autocomplete="off">
+    <button class="search-btn" id="searchBtn" onclick="doSearch()">🔍 搜索</button>
+    <button class="open-all-btn" id="openAllBtn" onclick="openAllPlatforms()">⚡ 一键打开全部</button>
+  </div>
+  <div class="info-bar" id="infoBar">
+    <span class="info-chip mfr" id="chipMfr"></span>
+    <span class="info-chip pkg" id="chipPkg"></span>
+  </div>
+  <div class="history-wrap">
+    <div class="history-tags" id="historyTags"></div>
+  </div>
+</div>
+
+<div class="results-header" id="resultsHeader">
+  <div class="results-title" id="resultsTitle"></div>
+  <button class="open-all-btn show" onclick="openAllPlatforms()">⚡ 一键打开全部6个平台</button>
+</div>
+
+<div class="platforms-grid" id="platformsGrid"></div>
+<div class="empty" id="empty">
+  <div class="icon">🔎</div>
+  <div style="margin-bottom:4px;">输入型号，一键对比 6 大平台</div>
+  <div style="font-size:12px;color:var(--tm);">立创 · 云汉 · 华秋 · Digi-Key · Mouser · 硬之城</div>
+</div>
+</div>
+
+<div class="ft">输入型号 → 点平台按钮 → 直达搜索结果 · 不造假 · 采购好帮手</div>
+<div class="copied-toast" id="copiedToast">📋 型号已复制到剪贴板</div>
+
+<script>
+let currentPart = '';
+let history = JSON.parse(localStorage.getItem('part_history')||'[]');
+
+const PLATFORMS = [
+  {k:'lcsc',n:'立创商城',bg:'#e74c3c',d:!0,u:'https://www.szlcsc.com',hint:'WAF保护，打开首页手动搜索'},
+  {k:'ickey',n:'云汉芯城',bg:'#3498db',d:!0,u:'https://search.ickey.cn/site/index.html?keyword={p}',hint:'直达搜索结果'},
+  {k:'hqchip',n:'华秋商城',bg:'#e67e22',d:!0,u:'https://www.hqchip.com/search?keyword={p}',hint:'直达搜索结果'},
+  {k:'digikey',n:'Digi-Key',bg:'#2ecc71',d:!1,u:'https://www.digikey.cn/zh/products?keywords={p}',hint:'全球最大分销商'},
+  {k:'mouser',n:'Mouser',bg:'#9b59b6',d:!1,u:'https://www.mouser.cn/c/?q={p}',hint:'技术文档最全'},
+  {k:'hardcity',n:'硬之城',bg:'#1abc9c',d:!0,u:'https://www.allchips.com/search?keyword={p}',hint:'直达搜索结果'},
+];
+
+// 型号识别库
+const BRAND_MAP = {
+  'STM32': {mfr:'STMicroelectronics',cat:'MCU',pkg:'LQFP'},
+  'ESP32': {mfr:'Espressif',cat:'无线模块',pkg:'Module'},
+  'ATMEGA': {mfr:'Microchip',cat:'MCU',pkg:'TQFP'},
+  'ATtiny': {mfr:'Microchip',cat:'MCU',pkg:'SOIC'},
+  'LM': {mfr:'Texas Instruments',cat:'模拟/电源'},
+  'TLV': {mfr:'Texas Instruments',cat:'模拟/电源'},
+  'TPS': {mfr:'Texas Instruments',cat:'电源管理'},
+  'MP': {mfr:'MPS',cat:'电源管理'},
+  'MAX': {mfr:'Maxim/Analog',cat:'模拟'},
+  'CH': {mfr:'WCH',cat:'接口芯片',pkg:'SOP'},
+  'CP': {mfr:'Silicon Labs',cat:'接口芯片'},
+  'SN': {mfr:'Texas Instruments',cat:'接口/逻辑'},
+  'W': {mfr:'Winbond',cat:'存储器',pkg:'SOIC'},
+  'MT': {mfr:'Micron',cat:'存储器'},
+  'BMP': {mfr:'Bosch',cat:'传感器'},
+  'MPU': {mfr:'TDK InvenSense',cat:'传感器'},
+  'AMS': {mfr:'AMS',cat:'电源管理',pkg:'SOT'},
+  'NUC': {mfr:'Nuvoton',cat:'MCU'},
+  'GD': {mfr:'GigaDevice',cat:'MCU/存储'},
+  'NRF': {mfr:'Nordic',cat:'无线'},
+  'BK': {mfr:'Beken',cat:'无线'},
+  'RTL': {mfr:'Realtek',cat:'无线/网络'},
+  'SGM': {mfr:'SG Micro',cat:'模拟'},
+  'INA': {mfr:'Texas Instruments',cat:'传感器'},
+  'ISO': {mfr:'Texas Instruments',cat:'隔离器'},
+  'UCC': {mfr:'Texas Instruments',cat:'电源管理'},
+  'TL': {mfr:'Texas Instruments',cat:'模拟'},
+  'NE': {mfr:'Texas Instruments',cat:'模拟'},
+  'OPA': {mfr:'Texas Instruments',cat:'运放'},
+  'AD': {mfr:'Analog Devices',cat:'模拟'},
+  'LTC': {mfr:'Analog Devices',cat:'模拟/电源'},
+  'IR': {mfr:'Infineon',cat:'功率器件'},
+  'BSC': {mfr:'Infineon',cat:'MOSFET'},
+  'IPW': {mfr:'Infineon',cat:'IGBT'},
+  'MC': {mfr:'NXP',cat:'MCU'},
+  'MK': {mfr:'NXP',cat:'MCU'},
+  'S9': {mfr:'NXP',cat:'处理器'},
+  'XC': {mfr:'Xilinx/AMD',cat:'FPGA'},
+  'EP': {mfr:'Intel/Altera',cat:'FPGA'},
+};
+
+function identify(part){
+  const u = part.toUpperCase().trim();
+  for(const [pfx,info] of Object.entries(BRAND_MAP)){
+    if(u.startsWith(pfx.toUpperCase()) && (pfx.length>=2 || u.length<=5)){
+      return {...info, raw:u};
+    }
+  }
+  return {mfr:'请在平台查看',cat:'请在平台查看',pkg:'请在平台查看', raw:u};
+}
+
+function getUrl(plat, part){
+  const u = plat.u;
+  if(!u.includes('{p}')) return u; // lcsc
+  return u.replace('{p}', encodeURIComponent(part));
+}
+
+function openAllPlatforms(){
+  if(!currentPart) return;
+  const part = currentPart;
+  PLATFORMS.forEach((pl,i)=>{
+    setTimeout(()=>window.open(getUrl(pl,part),'_blank'), i*200);
+  });
+  showToast('已打开 6 个平台标签页');
+}
+
+function showToast(msg){
+  const el=document.getElementById('copiedToast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+function copyPart(part){
+  navigator.clipboard.writeText(part).then(()=>showToast('📋 '+part+' 已复制到剪贴板'));
+}
+
+function addHistory(part){
+  history = [part, ...history.filter(p=>p!==part)].slice(0,12);
+  localStorage.setItem('part_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function removeHistory(part){
+  history = history.filter(p=>p!==part);
+  localStorage.setItem('part_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('historyTags');
+  if(!history.length){el.innerHTML='';return}
+  el.innerHTML = history.map(p=>`<span class="hist-tag" onclick="quickSearch('${p}')">${p}<span class="del" onclick="event.stopPropagation();removeHistory('${p}')">×</span></span>`).join('');
+}
+
+function quickSearch(p){
+  document.getElementById('searchInput').value=p;
+  doSearch();
+}
+
+function doSearch(){
+  const inp=document.getElementById('searchInput');
+  const part=inp.value.trim();
+  if(!part)return;
+  currentPart = part;
+  copyPart(part);
+  addHistory(part);
+
+  const info = identify(part);
+  const chipMfr=document.getElementById('chipMfr');
+  const chipPkg=document.getElementById('chipPkg');
+  const infoBar=document.getElementById('infoBar');
+  if(info.mfr!=='请在平台查看'){
+    chipMfr.textContent = '🏭 '+info.mfr;
+    chipPkg.textContent = '📦 '+info.pkg+' · '+info.cat;
+    infoBar.classList.add('show');
+  } else {
+    infoBar.classList.remove('show');
+  }
+
+  document.getElementById('openAllBtn').classList.add('show');
+  document.getElementById('resultsHeader').classList.add('show');
+  document.getElementById('resultsTitle').textContent = '「'+part.toUpperCase()+'」— 点击平台按钮直达搜索结果';
+  document.getElementById('empty').style.display='none';
+
+  const grid=document.getElementById('platformsGrid');
+  grid.innerHTML = PLATFORMS.map((pl,i)=>{
+    const isLcsc = pl.k==='lcsc';
+    return `<div class="pcard ${pl.k}" style="animation-delay:${i*0.04}s">
+      <div class="pcard-body">
+        <div class="pcard-left">
+          <div class="pcard-logo" style="background:${pl.bg}">${pl.n[0]}</div>
+          <div class="pcard-info">
+            <div class="pcard-name">${pl.n}</div>
+            <div class="pcard-sub">${pl.d?'国内仓':'国际'}</div>
+          </div>
+        </div>
+        <div class="pcard-right">
+          <a href="${getUrl(pl,part)}" target="_blank" rel="noopener" class="pcard-btn go">${isLcsc?'前往首页':'查看价格 →'}</a>
+          <div class="pcard-hint">${pl.hint}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Scroll to results
+  document.getElementById('resultsHeader').scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+window.addEventListener('load',()=>{
+  renderHistory();
+  if(history.length) document.getElementById('searchInput').value=history[0];
+});
+</script>
+</body>
+</html>
