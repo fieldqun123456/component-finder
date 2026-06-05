@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>元器件多平台比价 v3 — Component Finder</title>
+<style>
+:root {
+    --bg:#f0f2f5; --card-bg:#fff; --primary:#1677ff; --primary-hover:#4096ff;
+    --text:#1a1a2e; --text-secondary:#666; --text-muted:#999;
+    --border:#e8e8e8; --shadow:0 2px 8px rgba(0,0,0,.08);
+    --shadow-hover:0 6px 20px rgba(0,0,0,.12);
+    --radius:12px; --radius-sm:8px; --success:#52c41a; --warning:#faad14; --danger:#ff4d4f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh;
+}
+.header{
+    background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+    color:#fff; padding:18px 0 14px; text-align:center; position:sticky; top:0; z-index:100;
+    box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+.header h1{font-size:20px;font-weight:700}
+.header .sub{font-size:11px;opacity:.65;margin-top:2px}
+.container{max-width:1240px;margin:0 auto;padding:18px}
+.search-section{background:var(--card-bg);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:16px}
+.search-box{display:flex;gap:10px;align-items:center}
+.search-input-wrap{flex:1;position:relative}
+.search-input{
+    width:100%;padding:12px 16px;font-size:14px;border:2px solid var(--border);
+    border-radius:var(--radius-sm);outline:none;transition:all .2s;background:#fafafa;
+    font-family:"Courier New",Consolas,monospace;
+}
+.search-input:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(22,119,255,.08)}
+.search-input::placeholder{color:#bbb;font-family:inherit}
+.search-btn{
+    padding:12px 28px;font-size:14px;font-weight:600;background:var(--primary);
+    color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.search-btn:hover{background:var(--primary-hover);transform:translateY(-1px)}
+.search-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.search-hints{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.hint-tag{
+    font-size:11px;padding:3px 10px;background:#f0f5ff;color:var(--primary);
+    border-radius:4px;cursor:pointer;transition:all .15s;border:1px solid #d6e4ff;
+}
+.hint-tag:hover{background:#d6e4ff}
+.platform-filter{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.platform-filter-label{font-size:11px;color:var(--text-muted);margin-right:2px}
+.filter-chip{font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--border);background:#fff;cursor:pointer;transition:all .15s;user-select:none}
+.filter-chip.active{color:#fff;border-color:transparent}
+.filter-chip.lcsc.active{background:#e74c3c}
+.filter-chip.ickey.active{background:#3498db}
+.filter-chip.hqchip.active{background:#e67e22}
+.filter-chip.digikey.active{background:#2ecc71}
+.filter-chip.mouser.active{background:#9b59b6}
+.filter-chip.hardcity.active{background:#1abc9c}
+.filter-chip:hover:not(.active){border-color:var(--primary)}
+
+.loading{text-align:center;padding:40px 20px;display:none}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:14px}
+
+.card{
+    background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);
+    overflow:hidden;transition:all .2s;border:1px solid transparent;
+}
+.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.card.real{border-color:#2ecc71;box-shadow:0 2px 14px rgba(46,204,113,.15)}
+.card-header{padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0}
+.platform-name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:7px}
+.platform-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.platform-tag{font-size:9px;padding:2px 5px;border-radius:3px;background:#f0f0f0;color:var(--text-muted)}
+.stock-badge{font-size:11px;padding:3px 9px;border-radius:4px;font-weight:600}
+.stock-badge.success{background:#f6ffed;color:var(--success);border:1px solid #b7eb8f}
+.stock-badge.warning{background:#fffbe6;color:#d48806;border:1px solid #ffe58f}
+.stock-badge.danger{background:#fff2f0;color:var(--danger);border:1px solid #ffccc7}
+.card-body{padding:14px 18px}
+.price-main{font-size:26px;font-weight:800}
+.price-unit{font-size:12px;color:var(--text-muted)}
+.info-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px dashed #f5f5f5}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--text-muted)}
+.info-value{font-weight:500}
+.tiers-toggle{font-size:11px;color:var(--primary);cursor:pointer;margin-top:6px;display:inline-block;user-select:none}
+.tiers{margin-top:6px;display:none;background:#f8f9fb;border-radius:6px;overflow:hidden}
+.tiers.show{display:block}
+.tier-row{display:flex;justify-content:space-between;padding:5px 10px;font-size:11px;border-bottom:1px solid #f0f0f0}
+.tier-row:last-child{border-bottom:none}
+.tier-row.hd{background:#eef1f6;font-weight:600;color:var(--text-secondary)}
+.card-footer{padding:10px 18px;border-top:1px solid #f0f0f0;display:flex;gap:7px}
+.btn{flex:1;text-align:center;padding:8px;font-size:12px;font-weight:500;border-radius:6px;text-decoration:none;display:inline-block;transition:all .15s;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text)}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn.primary:hover{background:var(--primary-hover)}
+.btn.green{background:#2ecc71;color:#fff;border-color:#2ecc71}
+.btn.green:hover{background:#27ae60}
+.source-tag{font-size:10px;text-align:center;padding:5px;display:flex;align-items:center;justify-content:center;gap:4px}
+.source-tag.real{color:#2ecc71;font-weight:600}
+.source-tag.link{color:var(--text-muted)}
+
+.link-card-body{text-align:center;padding:32px 18px}
+.link-card-body .icon{font-size:28px;margin-bottom:8px}
+.link-card-body .msg{font-size:13px;color:var(--text-secondary);margin-bottom:12px}
+
+.footer{text-align:center;padding:24px 20px;color:var(--text-muted);font-size:11px}
+.warning-bar{background:#fffbe6;border:1px solid #ffe58f;border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:12px;color:#d48806;text-align:center}
+.no-results{text-align:center;padding:50px 20px;color:var(--text-muted)}
+.no-results .icon{font-size:36px;margin-bottom:8px}
+
+@media(max-width:768px){
+    .search-box{flex-direction:column}
+    .search-btn{width:100%}
+    .results-grid{grid-template-columns:1fr}
+    .header h1{font-size:17px}
+    .container{padding:12px}
+    .search-section{padding:16px 12px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <h1>🔍 元器件多平台比价</h1>
+    <div class="sub">输入型号，DigiKey 实时报价 + 5 大平台一键跳转查价</div>
+</header>
+
+<div class="container">
+<div class="search-section">
+    <div class="search-box">
+        <div class="search-input-wrap">
+            <input type="text" class="search-input" id="searchInput"
+                placeholder="输入原厂型号，如 STM32F103C8T6、ESP32-S3、SCH1633-D01..."
+                autocomplete="off">
+        </div>
+        <button class="search-btn" id="searchBtn" onclick="doSearch()">🔎 搜索</button>
+    </div>
+    <div class="search-hints">
+        <span style="font-size:11px;color:#999;">常用：</span>
+        <span class="hint-tag" onclick="quickSearch('STM32F103C8T6')">STM32F103C8T6</span>
+        <span class="hint-tag" onclick="quickSearch('ESP32-WROOM-32')">ESP32-WROOM-32</span>
+        <span class="hint-tag" onclick="quickSearch('MP1584EN')">MP1584EN</span>
+        <span class="hint-tag" onclick="quickSearch('CH340C')">CH340C</span>
+        <span class="hint-tag" onclick="quickSearch('W25Q128JVSIQ')">W25Q128</span>
+        <span class="hint-tag" onclick="quickSearch('SN65HVD230DR')">SN65HVD230</span>
+    </div>
+    <div class="platform-filter">
+        <span class="platform-filter-label">平台：</span>
+        <span class="filter-chip digikey active" data-platform="digikey" onclick="togglePlatform('digikey')">Digi-Key ✅实时</span>
+        <span class="filter-chip lcsc active" data-platform="lcsc" onclick="togglePlatform('lcsc')">立创</span>
+        <span class="filter-chip ickey active" data-platform="ickey" onclick="togglePlatform('ickey')">云汉</span>
+        <span class="filter-chip mouser active" data-platform="mouser" onclick="togglePlatform('mouser')">Mouser</span>
+        <span class="filter-chip hqchip active" data-platform="hqchip" onclick="togglePlatform('hqchip')">华秋</span>
+        <span class="filter-chip hardcity active" data-platform="hardcity" onclick="togglePlatform('hardcity')">硬之城</span>
+    </div>
+</div>
+
+<div class="warning-bar" id="noApiWarning" style="display:none;">
+    ⚠️ Digi-Key API 未配置 — 注册获取免费 Key：<a href="https://www.omkar.cloud/auth/sign-up" target="_blank" style="color:#d48806;">omkar.cloud</a>，每月100次免费
+</div>
+
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:var(--text-secondary);">正在查询 DigiKey 实时数据...</div>
+</div>
+
+<div class="results-grid" id="resultsGrid"></div>
+<div class="no-results" id="noResults" style="display:none;">
+    <div class="icon">📭</div><div>请输入型号开始搜索</div>
+</div>
+</div>
+
+<div class="footer">Component Finder v3.0 · DigiKey 实时API · 其他平台直接跳转 · 不造假</div>
+
+<script>
+const activePlatforms = new Set(['digikey','lcsc','ickey','mouser','hqchip','hardcity']);
+let hasDigikeyKey = false;
+
+async function init(){
+    try{
+        const r=await fetch('/api/status'); const s=await r.json();
+        hasDigikeyKey = s.digikey_api === '已连接';
+        if(!hasDigikeyKey) document.getElementById('noApiWarning').style.display='block';
+    }catch(e){}
+}
+
+function togglePlatform(k){
+    const el=document.querySelector(`.filter-chip[data-platform="${k}"]`);
+    if(activePlatforms.has(k)){activePlatforms.delete(k);el.classList.remove('active')}
+    else{activePlatforms.add(k);el.classList.add('active')}
+}
+function quickSearch(p){document.getElementById('searchInput').value=p;doSearch()}
+
+async function doSearch(){
+    const inp=document.getElementById('searchInput'),part=inp.value.trim();
+    if(!part){inp.focus();inp.style.borderColor='#ff4d4f';setTimeout(()=>inp.style.borderColor='',1500);return}
+    document.getElementById('loading').style.display='block';
+    document.getElementById('resultsGrid').innerHTML='';
+    document.getElementById('noResults').style.display='none';
+    const btn=document.getElementById('searchBtn');btn.disabled=true;btn.textContent='⏳...';
+    try{
+        const r=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({part_number:part,platforms:Array.from(activePlatforms)})});
+        const d=await r.json();
+        if(d.error){alert(d.error);return}
+        if(!d.has_real_data && !hasDigikeyKey) document.getElementById('noApiWarning').style.display='block';
+        render(d);
+    }catch(e){alert('搜索失败: '+e.message)}
+    finally{document.getElementById('loading').style.display='none';btn.disabled=false;btn.textContent='🔎 搜索'}
+}
+
+function render(d){
+    const grid=document.getElementById('resultsGrid');
+    d.results.forEach((r,idx)=>{
+        const card=document.createElement('div');
+        const isReal = r.data_type==='real' && r.price!=null;
+
+        if(isReal){
+            card.className='card real';
+            card.style.animationDelay=idx*0.04+'s';
+            const tiersH = (r.price_tiers||[]).map((t,i)=>{
+                const c=i===0?'hd':'';
+                return `<div class="tier-row ${c}"><span>${i===0?'批量':'≥'+t.qty.toLocaleString()}</span><span>${i===0?'单价':'¥'+t.unit_price.toFixed(2)}</span><span>${i===0?'总价':'¥'+t.total.toFixed(2)}</span></div>`;
+            }).join('');
+            card.innerHTML=`
+                <div class="card-header">
+                    <div class="platform-name"><span class="platform-dot" style="background:${r.platform_color}"></span>${r.platform_name} <span class="platform-tag">${r.platform_name_en}</span></div>
+                    <span class="stock-badge ${r.stock_label||'danger'}">${r.stock_text||'—'}</span>
+                </div>
+                <div class="card-body">
+                    <div><span class="price-main">¥${r.price.toFixed(2)}</span><span class="price-unit"> /个 (含税)</span><span style="margin-left:8px;font-size:10px;background:#e6fffb;color:#13c2c2;padding:2px 7px;border-radius:4px;font-weight:600;">🟢 实时</span></div>
+                    ${r.lead_time?`<div class="info-row"><span class="info-label">交期</span><span class="info-value">${r.lead_time}</span></div>`:''}
+                    ${r.manufacturer?`<div class="info-row"><span class="info-label">品牌</span><span class="info-value">${r.manufacturer}</span></div>`:''}
+                    ${r.description?`<div class="info-row"><span class="info-label">描述</span><span class="info-value" style="font-size:11px;">${r.description}</span></div>`:''}
+                    ${r.package?`<div class="info-row"><span class="info-label">封装</span><span class="info-value">${r.package}</span></div>`:''}
+                    <span class="tiers-toggle" onclick="toggleTiers(this)">📊 阶梯价格 ▼</span>
+                    <div class="tiers">${tiersH}</div>
+                </div>
+                <div class="card-footer">
+                    <a href="${r.url}" target="_blank" rel="noopener" class="btn green">前往 Digi-Key 查看</a>
+                    ${r.datasheet_url?`<a href="${r.datasheet_url}" target="_blank" class="btn">📄 数据手册</a>`:''}
+                </div>
+                <div class="source-tag real">🟢 ${r.data_source}</div>
+            `;
+        } else if(r.data_type==='real' && r.price==null){
+            // DigiKey 有 API 但未找到
+            card.className='card';
+            card.innerHTML=`
+                <div class="card-header">
+                    <div class="platform-name"><span class="platform-dot" style="background:${r.platform_color}"></span>${r.platform_name}</div>
+                    <span class="stock-badge danger">未收录</span>
+                </div>
+                <div class="link-card-body">
+                    <div class="icon">🔍</div>
+                    <div class="msg">DigiKey 未收录此型号</div>
+                    <a href="${r.url}" target="_blank" rel="noopener" class="btn primary">手动在 DigiKey 搜索</a>
+                </div>
+                <div class="source-tag link">${r.data_source}</div>
+            `;
+        } else{
+            // 纯跳转链接
+            card.className='card';
+            card.innerHTML=`
+                <div class="card-header">
+                    <div class="platform-name"><span class="platform-dot" style="background:${r.platform_color}"></span>${r.platform_name} <span class="platform-tag">${r.platform_name_en}</span>${r.domestic?'<span class="platform-tag" style="background:#fff7e6;color:#d46b08;border:1px solid #ffd591;">国内</span>':''}</div>
+                </div>
+                <div class="link-card-body">
+                    <div class="icon">🔗</div>
+                    <div class="msg">点击下方按钮跳转查看 <strong>实时价格 & 库存</strong></div>
+                    <a href="${r.url}" target="_blank" rel="noopener" class="btn primary">前往 ${r.platform_name} 查看 →</a>
+                </div>
+                <div class="source-tag link">📎 跳转查询</div>
+            `;
+        }
+        grid.appendChild(card);
+    });
+}
+
+function toggleTiers(el){
+    const t=el.nextElementSibling;t.classList.toggle('show');
+    el.textContent=t.classList.contains('show')?'📊 收起阶梯价格 ▲':'📊 阶梯价格 ▼';
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
