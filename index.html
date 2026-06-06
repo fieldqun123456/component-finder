@@ -166,6 +166,37 @@ const BRAND_MAP = {
   'S9': {mfr:'NXP',cat:'处理器'},
   'XC': {mfr:'Xilinx/AMD',cat:'FPGA'},
   'EP': {mfr:'Intel/Altera',cat:'FPGA'},
+
+  // ON Semiconductor
+  'NCP': {mfr:'ON Semiconductor',cat:'电源管理'},
+  'NCV': {mfr:'ON Semiconductor',cat:'电源/车载'},
+  'NCS': {mfr:'ON Semiconductor',cat:'模拟'},
+  'NCN': {mfr:'ON Semiconductor',cat:'模拟'},
+  'NTM': {mfr:'ON Semiconductor',cat:'MOSFET'},
+  'NTD': {mfr:'ON Semiconductor',cat:'MOSFET'},
+  'FAN': {mfr:'ON Semiconductor',cat:'电源管理'},
+
+  // Murata
+  'SCH': {mfr:'Murata',cat:'传感器'},
+  'GRM': {mfr:'Murata',cat:'MLCC电容'},
+  'LQM': {mfr:'Murata',cat:'电感'},
+  'BLM': {mfr:'Murata',cat:'磁珠'},
+  'NFA': {mfr:'Murata',cat:'滤波器/模块'},
+
+  // NXP (补充)
+  'LPC': {mfr:'NXP',cat:'MCU'},
+  'TJA': {mfr:'NXP',cat:'CAN收发器'},
+  'PCF': {mfr:'NXP',cat:'接口/I2C'},
+  'PCA': {mfr:'NXP',cat:'接口/I2C'},
+
+  // Samsung
+  'K4': {mfr:'Samsung',cat:'DRAM'},
+  'K9': {mfr:'Samsung',cat:'NAND Flash'},
+  'KM': {mfr:'Samsung',cat:'eMMC/存储'},
+
+  // SK hynix
+  'H5': {mfr:'SK hynix',cat:'DRAM'},
+  'HY': {mfr:'SK hynix',cat:'存储'},
 };
 
 function identify(part){
