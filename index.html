@@ -273,6 +273,8 @@ function findAlternatives(part){
   }
   return [];
 }
+
+function identify(part){
   const u = part.toUpperCase().trim();
   for(const [pfx,info] of Object.entries(BRAND_MAP)){
     if(u.startsWith(pfx.toUpperCase()) && (pfx.length>=2 || u.length<=5)){
