@@ -306,7 +306,7 @@ function showToast(msg){
 }
 
 function copyPart(part){
-  navigator.clipboard.writeText(part).then(()=>showToast('📋 '+part+' 已复制到剪贴板'));
+  try { navigator.clipboard.writeText(part).then(()=>showToast('📋 '+part+' 已复制到剪贴板')).catch(()=>{}); } catch(e) {}
 }
 
 function addHistory(part){
